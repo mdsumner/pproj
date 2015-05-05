@@ -15,7 +15,7 @@ library(raadtools)
 #x <- readsst()
 x <- raster("C:/temp/file.grd")
 ##for (i in seq(nrow(x))) x[i,] <- zoo::na.approx(x[i,])
-r <- x ##crop(x, extent(-180, 180, -90, 0), snap = "out")
+r <- crop(x, extent(-180, 180, -90, 0), snap = "out")
 
 
 m <- coordinates(r)
@@ -29,10 +29,10 @@ for (i in c(-1, 1)) {
 }
 
 m0 <- m0[, c(1, 2, 3, 4, 9, 10, 11, 12,  13, 14, 15, 16, 5, 6, 7, 8)]
-#m0[,1:2] <- project(m0[,1:2], "+proj=laea +lat_0=-90")
-#m0[,5:6] <- project(m0[,5:6], "+proj=laea +lat_0=-90")
-#m0[,9:10] <- project(m0[,9:10], "+proj=laea +lat_0=-90")
-#m0[,13:14] <- project(m0[,13:14], "+proj=laea +lat_0=-90")
+m0[,1:2] <- project(m0[,1:2], "+proj=laea +lat_0=-90")
+m0[,5:6] <- project(m0[,5:6], "+proj=laea +lat_0=-90")
+m0[,9:10] <- project(m0[,9:10], "+proj=laea +lat_0=-90")
+m0[,13:14] <- project(m0[,13:14], "+proj=laea +lat_0=-90")
 
 scl <- function(x) (x - min(x, na.rm = TRUE))/diff(range(x, na.rm = TRUE))
 
