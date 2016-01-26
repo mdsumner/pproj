@@ -1,0 +1,157 @@
+---
+title: "Illustrating Three Map Projections"
+author: "Michael Sumner"
+date: "27 January 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(maptools)
+library(rgl)
+library(rglwidget)
+library(rgdal)
+
+```
+
+We aim to visualize the creation of map projections in an interactive plot. 
+
+First, extract some map data and prepare. 
+
+```{r}
+library(maptools)
+library(rgl)
+library(rglwidget)
+library(rgdal)
+
+data(wrld_simpl)
+
+## raw coordinates from maptools
+ll <- coordinates(as(as(wrld_simpl, "SpatialLines"), "SpatialPoints"))
+
+## reduce the input map to the south
+maxlat <- -10
+llsub <- ll[,2] < maxlat
+
+## use the PROJ.4 sphere
+a <- 6370997
+## function to produce xyz from longitude, latitude, height
+## (spherical)
+llh2xyz <- function(lonlatheight, rad = 6370997, exag = 1) {
+  d2r <- pi / 180.0
+  cosLat = cos(lonlatheight[,2] * d2r)
+  sinLat = sin(lonlatheight[,2] * d2r)
+  cosLon = cos(lonlatheight[,1] * d2r)
+  sinLon = sin(lonlatheight[,1] * d2r)
+  x = rad * cosLat * sinLon
+  y = rad * cosLat * cosLon
+  z = (lonlatheight[,3] * exag) + rad * sinLat
+  cbind(x, y,-z)
+}
+
+xyz <- llh2xyz(cbind(ll, 0), rad = a)
+
+```
+
+Define three projections, these are Polar Stereographic, Gnomonic and Orthographic all on the South Pole. 
+
+# Polar Stereographic
+
+```{r}
+family <- c("stere", "gnom", "ortho")
+proj <- sprintf("+proj=%s +lon_0=0 +lat_0=-90 +ellps=sphere", family)
+
+jj <- 1
+
+pxy <- project(ll, proj[jj])
+  
+  ## these are the projected map points on the plane
+  pxyz <- cbind(pxy, a)
+  
+  open3d()
+  ## plot 
+  bg3d(bg = "black")
+  plot3d(xyz, col = "dodgerblue", axes = FALSE)
+  points3d(pxyz[llsub, ], col = "#6AB787FF")
+  
+  ## rays from the projection point
+  ptz2 <- cbind(project(ll[llsub, ][sample(sum(llsub), 100), ], proj[jj]), a)
+ 
+ for (i in seq_len(nrow(ptz2))) {
+    origin <- switch(family[jj], 
+                    stere = cbind(0, 0, -a), 
+                    gnom = cbind(0, 0, 0), 
+                    ortho = cbind(ptz2[i, 1], ptz2[i, 2], 0))
+    lines3d(rbind(origin, ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
+  }
+  subid <- currentSubscene3d()
+  rglwidget(elementId=family[jj], width = 700, height = 700)
+rgl.close()
+```
+
+
+# Gnomonic
+
+```{r}
+jj <- 2
+
+pxy <- project(ll, proj[jj])
+  
+  ## these are the projected map points on the plane
+  pxyz <- cbind(pxy, a)
+  
+  open3d()
+  ## plot 
+  bg3d(bg = "black")
+  plot3d(xyz, col = "dodgerblue", axes = FALSE)
+  points3d(pxyz[llsub, ], col = "#6AB787FF")
+  
+  ## rays from the projection point
+  ptz2 <- cbind(project(ll[llsub, ][sample(sum(llsub), 100), ], proj[jj]), a)
+ 
+ for (i in seq_len(nrow(ptz2))) {
+    origin <- switch(family[jj], 
+                    stere = cbind(0, 0, -a), 
+                    gnom = cbind(0, 0, 0), 
+                    ortho = cbind(ptz2[i, 1], ptz2[i, 2], 0))
+    lines3d(rbind(origin, ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
+  }
+  subid <- currentSubscene3d()
+  rglwidget(elementId=family[jj], width = 700, height = 700)
+rgl.close()
+```
+
+# Orthographic 
+
+```{r} 
+
+jj <- 3
+
+pxy <- project(ll, proj[jj])
+  
+  ## these are the projected map points on the plane
+  pxyz <- cbind(pxy, a)
+  
+  open3d()
+  ## plot 
+  bg3d(bg = "black")
+  plot3d(xyz, col = "dodgerblue", axes = FALSE)
+  points3d(pxyz[llsub, ], col = "#6AB787FF")
+  
+  ## rays from the projection point
+  ptz2 <- cbind(project(ll[llsub, ][sample(sum(llsub), 100), ], proj[jj]), a)
+ 
+ for (i in seq_len(nrow(ptz2))) {
+    origin <- switch(family[jj], 
+                    stere = cbind(0, 0, -a), 
+                    gnom = cbind(0, 0, 0), 
+                    ortho = cbind(ptz2[i, 1], ptz2[i, 2], 0))
+    lines3d(rbind(origin, ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
+  }
+  subid <- currentSubscene3d()
+  rglwidget(elementId=family[jj], width = 700, height = 700)
+rgl.close()
+
+
+```
+
