@@ -1,4 +1,4 @@
-
+source("sinbin.R")
 llh2xyz <- function(lonlatheight, rad = 6370997, exag = 1) {
   d2r <- pi / 180.0
   cosLat = cos(lonlatheight[,2] * d2r)
@@ -11,16 +11,29 @@ llh2xyz <- function(lonlatheight, rad = 6370997, exag = 1) {
   cbind(x, y,-z)
 }
 
-library(geosphere)
-library(rgl)
-x <- randomCoordinates(23)
 
-xyz <- llh2xyz(cbind(x, 0))
+## http://www.cmu.edu/biolphys/deserno/pdf/sphere_equi.pdf
 
+x <- coordinates(as(as(sinbin(6), "SpatialLines"), "SpatialPoints"))
+xyz <- llh2xyz(cbind(x, 0)[x[,2] < 0, ])
 ch <- convhulln(xyz)
-
 ts.surf <- t(ch)
 rgl.triangles(xyz[ts.surf, 1], xyz[ts.surf, 2], xyz[ts.surf, 3], 
-col = "aliceblue", alpha = 0.8)
-for (i in 1:(8*360)) rgl.viewpoint(i/8)
+              col = pal(ncol(ts.surf)), alpha = 0.8)
 
+# 
+# library(geosphere)
+# library(rgl)
+# library(geometry)
+# x <- regularCoordinates(2)
+# 
+# 
+# xyz <- llh2xyz(cbind(x, 0))
+# 
+# ch <- convhulln(xyz)
+# 
+# ts.surf <- t(ch)
+# rgl.triangles(xyz[ts.surf, 1], xyz[ts.surf, 2], xyz[ts.surf, 3], 
+# col = "blue", alpha = 0.8)
+# ##for (i in seq(0, 360, length = 80)) rgl.viewpoint(i/8)
+# 

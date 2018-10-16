@@ -6,22 +6,27 @@ library(rgeos)
 
 library(rgdal)
 
-
 ## m/s
 d <- readwind("2010-01-01", xylim = extent(-180, 180, -80, 0))
 
 ##d2 <- resample(d,  raster(extent(d), nrows = nrow(d)/8, ncols = ncol(d)/8), method = "ngb")
-
 smp <- as.data.frame(randomCoordinates(600))
 smp <- smp[smp[,2] < 0,]
 coordinates(smp) <- 1:2
 projection(smp) <- projection(d)
+
 ##tab <- as(d2, "SpatialPointsDataFrame")
+## source points with U,V components
 tab <- extract(d, smp, sp = TRUE)
 
+## background data
 wrld0 <- suppressWarnings(gIntersection(wrld_simpl, as(extent(-180, 180, -86.4, 0), "SpatialPolygons"), byid = TRUE))
 wrld <- spTransform(wrld0, CRS(projection(d)))
 xy <- coordinates(tab)
+
+xy.ortho <- lapply(seq_len(nrow(xy)), 
+                   function(x) gcIntermediate(xy[x,],
+                                              cbind(xy[x, 1] + tab[[1]][x], xy[x, 2] + tab[[2]][x])))
 
 xy.ortho <- lapply(seq_len(nrow(xy)), 
                    function(x) gcIntermediate(xy[x,],
