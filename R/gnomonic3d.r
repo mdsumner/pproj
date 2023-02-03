@@ -22,7 +22,7 @@ xyz <- llh2xyz(cbind(ll, 0), rad = a)
 
 ## project
 prj <- "+proj=gnom +lon_0=0 +lat_0=-90 +ellps=sphere"
-pxy <- reproj::reproj_xy(ll, prj)
+pxy <- reproj::reproj_xy(ll, prj, source = .ll())
 
 ## these are the projected map points on the plane tangent
 ## to the south pole
