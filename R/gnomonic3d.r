@@ -45,7 +45,7 @@ rgl::points3d(pxyz[llsub, ], col = "#6AB787FF")
 rgl::view3d (userMatrix = um, zoom = 0.5)
 
 ## rays from the projection point
-ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 100), ], prj, source = "OGC:CRS84"), a)
+ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 100), ], prj, source = .ll()), a)
 for (i in seq_len(nrow(ptz2))) {
   rgl::lines3d(rbind(c(0, 0, 0), ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
 }

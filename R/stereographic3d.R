@@ -14,7 +14,7 @@ xyz <- llh2xyz(cbind(ll, 0), rad = a)
 
 ## project to Stereographic
 prj <- "+proj=stere +lon_0=0 +lat_0=-90 +ellps=sphere"
-pxy <- reproj::reproj_xy(ll, prj, source = "OGC:CRS84")
+pxy <- reproj::reproj_xy(ll, prj, source = .ll())
 
 ## these are the projected map points on the plane tangent
 ## to the south pole
@@ -37,7 +37,7 @@ points3d(pxyz[llsub, ], col = "#6AB787FF")
 view3d(userMatrix = um, zoom = 0.5)
 
 ## rays from the projection point at the north pole
-ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 25), ], prj, source = "OGC:CRS84"), a)
+ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 25), ], prj, source = .ll()), a)
 for (i in seq_len(nrow(ptz2))) {
   lines3d(rbind(c(0, 0, -a), ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
 }

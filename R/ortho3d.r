@@ -5,8 +5,6 @@
 #' @return nothing, side effect a 3D plot
 #' @export
 #'
-#' @examples
-#' do_ortho()
 do_ortho <- function() {
 
   ll <- get_map(na.rm = TRUE)
@@ -23,7 +21,7 @@ prj <- "+proj=ortho +lon_0=0 +lat_0=-90 +ellps=sphere"
 tf <- tempfile()
 sink(tf)
 on.exit(unlink(tf), add = TRUE)
-pxy <- reproj::reproj_xy(ll, prj, source = "OGC:CRS84")
+pxy <- reproj::reproj_xy(ll, prj, source = .ll())
 sink(NULL)
 
 ## these are the projected map points on the plane tangent
@@ -47,7 +45,7 @@ rgl::points3d(pxyz[llsub, ], col = "#6AB787FF")
 rgl::view3d(userMatrix = um, zoom = 0.5)
 
 ## rays from the projection point
-ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 100), ], prj, source = "OGC:CRS84"), a)
+ptz2 <- cbind(reproj::reproj_xy(ll[llsub, ][sample(sum(llsub), 100), ], prj, source = .ll()), a)
 for (i in seq_len(nrow(ptz2))) {
   rgl::lines3d(rbind(c(ptz2[i, 1:2], 0), ptz2[i,,drop = FALSE]), color = "grey", lwd =1)
 }

@@ -12,6 +12,3 @@ nothing, side effect a 3D plot
 \description{
 May need 'rgl::rglwidget()' if you don't have interactive graphics.
 }
-\examples{
-do_ortho()
-}
