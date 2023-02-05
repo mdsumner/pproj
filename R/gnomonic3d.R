@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' #do_gnomonic()
+#' do_gnomonic()
 #'
 #' @importFrom rgl bg3d plot3d points3d lines3d view3d
 #' @importFrom reproj reproj_xy
